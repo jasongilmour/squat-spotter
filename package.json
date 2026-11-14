@@ -1,0 +1,16 @@
+{
+  "name": "squat-spotter",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Deterministic package-name risk assessments for central policy enforcement",
+  "license": "MIT",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "start": "node src/server.ts",
+    "check": "tsc --noEmit",
+    "test": "node --test tests/*.test.ts",
+    "demo": "node src/cli.ts --fixture fixtures/raect.json"
+  },
+  "devDependencies": { "typescript": "~5.9.3", "@types/node": "^24.0.0" }
+}
