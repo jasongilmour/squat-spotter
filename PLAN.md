@@ -1,6 +1,6 @@
 # Squat Spotter product plan
 
-Draft, 14 November 2026. Planning only; no application or deployment yet.
+Plan updated 14 November 2026. A local npm prototype is now implemented; see README.md and docs/TASKS.md for delivered scope. No hosting deployment yet.
 
 ## Product and scope
 
@@ -186,7 +186,7 @@ The opportunity is a small, easy-to-integrate public service with reproducible c
 
 ## pkgguard reuse assessment and centralised policies
 
-Inspected upstream commit `53dadd7ad16dcc99e5e19e135447f2ffb02e1df3` on 14 November 2026. No upstream implementation has been copied into this repository yet.
+Inspected upstream commit `53dadd7ad16dcc99e5e19e135447f2ffb02e1df3` on 14 November 2026. The prototype now includes an attributed TypeScript port of the OSA distance helper as a reference baseline; see THIRD_PARTY_NOTICES.md. Production scoring, registry acquisition and caching are original implementations.
 
 ### Reusable foundations
 

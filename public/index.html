@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Squat Spotter</title><link rel="stylesheet" href="/style.css"><script src="/app.js" defer></script></head>
+<body><main>
+<header><p class="eyebrow">Open-source prototype · npm</p><h1>Squat Spotter</h1><p>Check a package name for similarity to a small seed list of popular npm packages. The assessment can inform central policy; an organisation decides whether to block a package, for example through Cloudsmith.</p></header>
+<section aria-labelledby="check-title"><h2 id="check-title">Check a package</h2><p>The local backend requests npm metadata and download counts. This prototype does not run or install packages.</p><form id="check"><label for="name">Package name</label><div class="form-row"><input id="name" name="name" required maxlength="214" placeholder="e.g. raect" autocomplete="off"><button>Check name</button></div></form><p id="message" role="status" aria-live="polite"></p></section>
+<section id="result" hidden aria-live="polite"><h2>Assessment</h2><p id="score" class="score"></p><p id="summary"></p><dl id="details"></dl><h3>Comparable alternatives</h3><div class="table-wrap"><table><thead><tr><th>Name</th><th>Downloads</th><th>Similarity</th><th>Distance</th><th>Pair risk</th></tr></thead><tbody id="alternatives"></tbody></table></div><p id="empty" hidden>No comparable alternatives with usable evidence.</p><h3>JSON response</h3><pre id="json"></pre></section>
+<section><h2>Use the API</h2><p>Use curl against the running local server:</p><pre>curl --get 'http://127.0.0.1:3000/v1/check' \
+  --data-urlencode 'name=raect' \
+  --data-urlencode 'ecosystem=npm'</pre></section>
+<footer><p><strong>Limits:</strong> The score is a heuristic, not a probability or a safety verdict. The seed corpus has limited coverage and cannot check every npm package. Similar names and low adoption can be legitimate. Slopsquatting is not assessed. <a href="https://github.com/jasongilmour/squat-spotter">Source on GitHub</a> · <a href="https://github.com/jasongilmour/squat-spotter/blob/codex/npm-risk-prototype/THIRD_PARTY_NOTICES.md">Third-party notices</a>.</p></footer>
+</main></body></html>

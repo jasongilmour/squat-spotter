@@ -1,0 +1,381 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Squat Spotter prototype API",
+    "version": "0.1.0",
+    "description": "Local prototype. Scores are heuristics, not probabilities or safety verdicts. Candidate coverage is a limited seed list. This is not a distributed production service."
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:3000"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Check service health",
+        "responses": {
+          "200": {
+            "description": "Running model version"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimit"
+          }
+        }
+      }
+    },
+    "/v1/check": {
+      "get": {
+        "summary": "Obtain npm evidence and assess one name",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ecosystem",
+            "in": "query",
+            "schema": {
+              "const": "npm",
+              "default": "npm"
+            }
+          },
+          {
+            "name": "registry",
+            "in": "query",
+            "description": "Allowlisted npm registry identity or alias, not an arbitrary URL.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "modelVersion",
+            "in": "query",
+            "description": "Optional model pin; unsupported versions are rejected.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Assessed or partial result. A nonexistent package is a normal result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Assessment"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimit"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        }
+      }
+    },
+    "/v1/assess": {
+      "post": {
+        "summary": "Replay an immutable evidence snapshot",
+        "description": "Send the snapshot itself as JSON. Body limit is 64 KiB. No registry request is made; insufficient evidence is returned as an assessment with a null score. Caller-supplied evidence is not authenticated registry evidence; do not use replay results as trusted Cloudsmith policy input without independent provenance verification.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Snapshot"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Deterministic assessment, including partial or insufficient data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Assessment"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "413": {
+            "description": "Body too large"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimit"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        },
+        "parameters": [
+          {
+            "name": "modelVersion",
+            "in": "query",
+            "description": "Optional model pin; unsupported versions are rejected.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "BadRequest": {
+        "description": "Invalid request, snapshot, or model pin"
+      },
+      "RateLimit": {
+        "description": "Rate limited",
+        "headers": {
+          "Retry-After": {
+            "schema": {
+              "type": "integer"
+            }
+          }
+        }
+      },
+      "Unavailable": {
+        "description": "Evidence unavailable or insufficient; an insufficient live result includes an assessment with a null score.",
+        "headers": {
+          "Retry-After": {
+            "schema": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "Observation": {
+        "type": "object",
+        "required": [
+          "name",
+          "exists",
+          "downloads",
+          "observedAt",
+          "expiresAt"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "exists": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "downloads": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "observedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "error": {
+            "type": "string"
+          }
+        }
+      },
+      "Snapshot": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "identity",
+          "assessmentTime",
+          "window",
+          "corpus",
+          "subject",
+          "candidates"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "const": "1"
+          },
+          "identity": {
+            "type": "object",
+            "required": [
+              "ecosystem",
+              "registry",
+              "name"
+            ],
+            "properties": {
+              "ecosystem": {
+                "const": "npm"
+              },
+              "registry": {
+                "const": "https://registry.npmjs.org"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          },
+          "assessmentTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "window": {
+            "type": "object",
+            "required": [
+              "start",
+              "end"
+            ],
+            "properties": {
+              "start": {
+                "type": "string",
+                "format": "date"
+              },
+              "end": {
+                "type": "string",
+                "format": "date"
+              }
+            }
+          },
+          "corpus": {
+            "type": "object",
+            "required": [
+              "version",
+              "names",
+              "coverage",
+              "description"
+            ],
+            "properties": {
+              "version": {
+                "type": "string"
+              },
+              "names": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "coverage": {
+                "const": "seed"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          },
+          "subject": {
+            "$ref": "#/components/schemas/Observation"
+          },
+          "candidates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Observation"
+            }
+          }
+        }
+      },
+      "Assessment": {
+        "type": "object",
+        "required": [
+          "schemaVersion",
+          "modelVersion",
+          "evidenceDigest",
+          "identity",
+          "assessmentTime",
+          "riskScore",
+          "status",
+          "exists",
+          "window",
+          "corpus",
+          "subject",
+          "alternatives",
+          "reasonCodes",
+          "slopsquattingAssessment"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "const": "1"
+          },
+          "modelVersion": {
+            "type": "string"
+          },
+          "evidenceDigest": {
+            "type": "string"
+          },
+          "identity": {
+            "type": "object"
+          },
+          "assessmentTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "riskScore": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 1
+          },
+          "status": {
+            "enum": [
+              "assessed",
+              "partial",
+              "insufficient_data"
+            ]
+          },
+          "exists": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "window": {
+            "type": "object"
+          },
+          "corpus": {
+            "type": "object",
+            "description": "Always identifies limited seed coverage."
+          },
+          "subject": {
+            "$ref": "#/components/schemas/Observation"
+          },
+          "alternatives": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "reasonCodes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "slopsquattingAssessment": {
+            "const": "not_assessed"
+          }
+        }
+      }
+    }
+  }
+}

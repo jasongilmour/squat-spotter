@@ -4,10 +4,10 @@ Branch: `codex/npm-risk-prototype`. Parallel implementation uses Terra agents wi
 
 | Task | Owner | Scope | State |
 | --- | --- | --- | --- |
-| P1: Deterministic scoring | scoring agent | Snapshot validation, unrestricted edit distance, numerical formula, replay digest, synthetic fixtures, tests | In progress |
-| P2: npm evidence | npm_data agent | Strict identities, original seed corpus, npm metadata/download adapters, persistent cache and local leases, mocked tests | In progress |
-| P3: API and interfaces | api_web agent | HTTP contract, replay endpoint, CLI, minimal web checker, OpenAPI, HTTP tests | In progress |
-| P4: Integration and provenance | coordinator | Shared contracts, toolchain, README, licence attribution, CI, integration checks, Git checkpoints | In progress |
+| P1: Deterministic scoring | scoring agent | Snapshot validation, unrestricted edit distance, numerical formula, replay digest, synthetic fixtures, tests | Complete |
+| P2: npm evidence | npm_data agent | Strict identities, original seed corpus, npm metadata/download adapters, persistent cache and local leases, mocked tests | Complete |
+| P3: API and interfaces | api_web agent | HTTP contract, replay endpoint, CLI, minimal web checker, OpenAPI, HTTP tests | Complete |
+| P4: Integration and provenance | coordinator | Shared contracts, toolchain, README, licence attribution, CI, integration checks, Git checkpoints | Complete |
 
 ## First-step acceptance
 
@@ -23,3 +23,7 @@ Branch: `codex/npm-risk-prototype`. Parallel implementation uses Terra agents wi
 ## Follow-on gates
 
 Sustainable candidate corpus and recall evaluation; distributed cache backend; hard-capped hosting; browser-direct CORS validation; Cloudsmith adapter proof of concept; additional registries. None are claimed complete by this prototype.
+
+## Verified checkpoint
+
+TypeScript check, 15 automated tests and the offline synthetic demo pass. The local browser checker completed a live npm `raect`/`react` assessment after replacing large packument reads with bounded latest-version metadata (404 fallback preserves existence semantics). The score is advisory and seed-limited. No hosting or Cloudsmith writes were performed.

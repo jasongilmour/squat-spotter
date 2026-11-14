@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "1",
+  "identity": { "ecosystem": "npm", "registry": "https://registry.npmjs.org", "name": "raect" },
+  "assessmentTime": "2026-11-14T12:00:00.000Z",
+  "window": { "start": "2026-10-15", "end": "2026-11-13" },
+  "corpus": { "version": "synthetic-1", "names": ["react", "preact"], "coverage": "seed", "description": "Synthetic development fixture: invented counts and existence states, not an allegation about any real package." },
+  "subject": { "name": "raect", "exists": true, "downloads": 10, "observedAt": "2026-11-14T11:00:00.000Z", "expiresAt": "2026-11-15T11:00:00.000Z" },
+  "candidates": [
+    { "name": "react", "exists": true, "downloads": 1000000, "observedAt": "2026-11-14T11:00:00.000Z", "expiresAt": "2026-11-15T11:00:00.000Z" },
+    { "name": "preact", "exists": true, "downloads": 10000, "observedAt": "2026-11-14T11:00:00.000Z", "expiresAt": "2026-11-15T11:00:00.000Z" }
+  ]
+}
